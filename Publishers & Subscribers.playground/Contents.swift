@@ -69,3 +69,20 @@ example(of: "assing(to:on:)") {
     _ = publisher
         .assign(to: \.value, on: object)
 }
+
+
+example(of: "assing(to:)") {
+    class SomeObject {
+        @Published var value = 0
+    }
+    
+    let object = SomeObject()
+    
+    object.$value
+        .sink {
+            print($0)
+        }
+    
+    (0..<10).publisher
+        .assign(to: &object.$value)
+}
