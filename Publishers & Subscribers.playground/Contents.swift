@@ -86,3 +86,30 @@ example(of: "assing(to:)") {
     (0..<10).publisher
         .assign(to: &object.$value)
 }
+
+
+example(of: "Custom Subscription") {
+    
+    let publisher = (1...6).publisher
+    
+    final class InSubscriber: Subscriber {
+        typealias Input = Int
+        typealias Failure = Never
+        
+        func receive(subscription: Subscription) {
+            subscription.request(.max(5))
+        }
+        
+        func receive(_ input: Int) -> Subscribers.Demand {
+            print("Received value", input)
+            return .none
+        }
+        
+        func receive(completion: Subscribers.Completion<Never>) {
+            print("Recived completion", completion)
+        }
+    }
+    
+    let subscriber = InSubscriber()
+    publisher.subscribe(subscriber)
+}
