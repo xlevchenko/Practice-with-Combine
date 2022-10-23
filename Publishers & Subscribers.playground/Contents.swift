@@ -142,3 +142,74 @@ example(of: "Custom Subscription") {
 //        })
 //        .store(in: &subscriptions)
 //}
+
+example(of: "PassthroughSubject") {
+    
+    enum MyError: Error {
+        case test
+    }
+    
+    final class StringSubcriber: Subscriber {
+        typealias Input = String
+        typealias Failure = MyError
+        
+        func receive(subscription: Subscription) {
+            subscription.request(.max(2))
+        }
+        
+        func receive(_ input: String) -> Subscribers.Demand {
+            print("Receive value", input)
+            
+            return input == "World" ? .max(1) : .none
+        }
+        
+        func receive(completion: Subscribers.Completion<MyError>) {
+            print("Receive completion", completion)
+        }
+    }
+    
+    let subscriber = StringSubcriber()
+    
+    let subject = PassthroughSubject<String, MyError>()
+    subject.subscribe(subscriber)
+    
+    let subscription = subject
+        .sink { completion in
+            print("Received completion (sink)", completion)
+        } receiveValue: { value in
+            print("Receive value (sink)", value)
+        }
+    subject.send("Hello")
+    subject.send("World")
+    
+    subscription.cancel()
+    
+    subject.send("Still there?")
+    subject.send(completion: .failure(.test))
+    subject.send(completion: .finished)
+    subject.send("How about another one?")
+}
+
+
+example(of: "CurrentValueSubject") {
+    var subcriptions = Set<AnyCancellable>()
+    
+    let subject = CurrentValueSubject<Int, Never>(0)
+    
+    subject
+        .print()
+        .sink(receiveValue: { print($0) })
+        .store(in: &subcriptions)
+    
+    subject.send(1)
+    subject.send(2)
+    print(subject.value)
+    subject.value = 3
+    print(subject.value)
+    
+    subject
+        .print()
+        .sink(receiveValue: { print("Second subscription:", $0) })
+        .store(in: &subcriptions)
+    subject.send(completion: .finished)
+}
