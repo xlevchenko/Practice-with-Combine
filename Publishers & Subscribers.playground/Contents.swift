@@ -255,3 +255,15 @@ example(of: "Dynamically adjusting Demand") {
     subject.send(5)
     subject.send(6)
 }
+
+
+example(of: "Type erasure") {
+    let subject = PassthroughSubject<Int, Never>()
+    let publisher = subject.eraseToAnyPublisher()
+    
+    publisher
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+    
+    subject.send(0)
+}
