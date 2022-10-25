@@ -22,3 +22,18 @@ example(of: "map") {
         .sink(receiveValue: { print($0) })
         .store(in: &subscriptions)
 }
+
+
+example(of: "mapping key paths") {
+    let publisher = PassthroughSubject<Coordinate, Never>()
+    
+    publisher
+        .map(\.x, \.y)
+        .sink { x, y in
+            print("The cordinate at (\(x), \(y)) is in quadrant", quadrantOf(x: x, y: y))
+        }
+        .store(in: &subscriptions)
+    
+    publisher.send(Coordinate(x: 10, y: -8))
+    publisher.send(Coordinate(x: 0, y: 5))
+}
