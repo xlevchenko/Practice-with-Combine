@@ -53,7 +53,7 @@ example(of: "flatMap") {
         Just(
             codes
                 .compactMap({ code in
-                    guard (32...255).contains(codes) else { return nil }
+                    guard (32...255).contains(code) else { return nil }
                     return String(UnicodeScalar(code) ?? " ")
                 })
                 .joined()
@@ -64,6 +64,15 @@ example(of: "flatMap") {
     [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33].publisher
         .collect()
         .flatMap(decode)
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+}
+
+    
+example(of: "replaceNil") {
+    ["A", nil, "B"].publisher
+        .eraseToAnyPublisher()
+        .replaceNil(with: "-")
         .sink(receiveValue: { print($0) })
         .store(in: &subscriptions)
 }
