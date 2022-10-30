@@ -86,3 +86,24 @@ example(of: "replaceEmpty(with:)") {
         .sink(receiveCompletion: { print($0) }, receiveValue: { print($0) })
         .store(in: &subscriptions)
 }
+
+
+example(of: "scan") {
+    
+    var dailyGainLoss: Int {
+        .random(in: -10...10)
+    }
+    
+    let october2022 = (0..<22)
+        .map { _ in dailyGainLoss }
+        .publisher
+    
+    october2022
+        .scan(50) { latest, current in
+            max(0, latest + current)
+        }
+        .sink(receiveValue: { _ in})
+        .store(in: &subscriptions)
+}
+
+
