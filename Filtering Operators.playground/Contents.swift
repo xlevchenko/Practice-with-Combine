@@ -24,3 +24,16 @@ example(of: "removeDuplicates") {
         .sink(receiveValue: { print($0) })
         .store(in: &subscriptions)
 }
+
+
+example(of: "compactMap") {
+    let string = ["a", "1.24", "3", "def", "45", "0.23"].publisher
+    
+    string
+        .compactMap({ Float($0) })
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+    
+
+ 
+}
