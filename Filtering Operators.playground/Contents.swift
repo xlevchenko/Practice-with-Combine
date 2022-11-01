@@ -33,7 +33,15 @@ example(of: "compactMap") {
         .compactMap({ Float($0) })
         .sink(receiveValue: { print($0) })
         .store(in: &subscriptions)
-    
+}
 
- 
+
+example(of: "ignonoreOutput") {
+    let numbers = (1...10_000).publisher
+    
+    numbers
+        .ignoreOutput()
+        .sink(receiveCompletion: { print("Completed with: \($0)") },
+              receiveValue: { print($0) })
+        .store(in: &subscriptions)
 }
