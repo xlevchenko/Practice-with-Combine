@@ -59,3 +59,21 @@ example(of: "first(where:)") {
         .store(in: &subscriptions)
 }
 
+
+example(of: "last:(where:)") {
+    let number = PassthroughSubject<Int, Never>()
+    
+    number
+        .last(where: { $0 % 2 == 0 })
+        .sink(receiveCompletion: { print("Completed with: \($0)")},
+              receiveValue: { print($0) })
+        .store(in: &subscriptions)
+    
+    number.send(1)
+    number.send(2)
+    number.send(3)
+    number.send(4)
+    number.send(5)
+    number.send(6)
+    number.send(completion: .finished)
+}
