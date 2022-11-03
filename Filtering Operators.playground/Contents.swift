@@ -77,3 +77,13 @@ example(of: "last:(where:)") {
     number.send(6)
     number.send(completion: .finished)
 }
+
+
+example(of: "dropFirst") {
+    let numbers = (1...10).publisher
+    
+    numbers
+        .dropFirst(8)
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+}
