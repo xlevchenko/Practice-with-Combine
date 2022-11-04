@@ -127,3 +127,35 @@ example(of: "prefix") {
               receiveValue: { print($0) })
         .store(in: &subscriptions)
 }
+
+
+example(of: "prefix(while:)") {
+    let numbers = (1...10).publisher
+    
+    numbers
+        .prefix(while: { $0 < 3 })
+        .sink(receiveCompletion: { print("Completed with: \($0)") },
+              receiveValue: { print($0) })
+        .store(in: &subscriptions)
+}
+
+
+example(of: "prefix(untilOutputFrom:)") {
+    let isReady = PassthroughSubject<Void, Never>()
+    let taps = PassthroughSubject<Int, Never>()
+    
+    taps
+        .prefix(untilOutputFrom: isReady)
+        .sink(receiveCompletion: { print("Completed with: \($0)")},
+              receiveValue: { print($0) })
+        .store(in: &subscriptions)
+    
+    (1...5).forEach { n in
+        taps.send(n)
+        
+        if n == 2 {
+            isReady.send()
+        }
+    }
+}
+
