@@ -88,3 +88,14 @@ example(of: "append(Sequence)") {
         .sink(receiveValue: { print($0) })
         .store(in: &subscriptions)
 }
+
+
+example(of: "append(Publisher)") {
+    let publisher1 = [1, 2].publisher
+    let publisher2 = [3, 4].publisher
+    
+    publisher1
+        .append(publisher2)
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+}
