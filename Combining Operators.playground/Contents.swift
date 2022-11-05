@@ -50,3 +50,29 @@ example(of: "prepend(Publisher) #2") {
     publisher2.send(2)
     publisher2.send(completion: .finished)
 }
+
+
+example(of: "append(Output...)") {
+    let publisher = [1].publisher
+    
+    publisher
+        .append(2, 3)
+        .append(4)
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+}
+
+
+example(of: "appernd(Output...) #2") {
+    let publisher = PassthroughSubject<Int, Never>()
+    
+    publisher
+        .append(2, 3)
+        .append(4)
+        .sink(receiveValue: { print($0) })
+        .store(in: &subscriptions)
+    
+    publisher.send(1)
+    publisher.send(2)
+    publisher.send(completion: .finished)
+}
