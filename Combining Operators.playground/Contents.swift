@@ -132,3 +132,35 @@ example(of: "switchToLatest") {
     publisher3.send(completion: .finished)
     publisher.send(completion: .finished)
 }
+
+
+example(of: "switchToLatest - Network Request") {
+    let url = URL(string: "https://source.unsplash.com/random")!
+    
+    func getImage() -> AnyPublisher<UIImage?, Never> {
+        URLSession.shared
+            .dataTaskPublisher(for: url)
+            .map {data, _ in UIImage(data: data) }
+            .print("image")
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
+    }
+    
+    let taps = PassthroughSubject<Void, Never>()
+    
+    taps
+        .map { _ in getImage() }
+        .switchToLatest()
+        .sink(receiveValue: { _ in })
+        .store(in: &subscriptions)
+    
+    taps.send()
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        taps.send()
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3.1) {
+        taps.send()
+    }
+}
