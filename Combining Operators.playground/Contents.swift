@@ -148,19 +148,45 @@ example(of: "switchToLatest - Network Request") {
     
     let taps = PassthroughSubject<Void, Never>()
     
-    taps
-        .map { _ in getImage() }
-        .switchToLatest()
-        .sink(receiveValue: { _ in })
+//    taps
+//        .map { _ in getImage() }
+//        .switchToLatest()
+//        .sink(receiveValue: { _ in })
+//        .store(in: &subscriptions)
+//    
+//    taps.send()
+//    
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//        taps.send()
+//    }
+//    
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 3.1) {
+//        taps.send()
+//    }
+}
+
+
+example(of: "merge(with:)") {
+    let publisher1 = PassthroughSubject<Int, Never>()
+    let publisher2 = PassthroughSubject<Int, Never>()
+    
+    publisher1
+        .merge(with: publisher2)
+        .sink(receiveCompletion: { _ in print("Completed")},
+              receiveValue: { print($0)})
         .store(in: &subscriptions)
     
-    taps.send()
     
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-        taps.send()
-    }
+    publisher1.send(1)
+    publisher1.send(2)
     
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3.1) {
-        taps.send()
-    }
+    publisher2.send(3)
+    
+    publisher1.send(4)
+    
+    publisher2.send(5)
+    
+    publisher1.send(completion: .finished)
+    publisher2.send(completion: .finished)
+    
 }
