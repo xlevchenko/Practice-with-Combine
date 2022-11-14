@@ -30,6 +30,6 @@ let subscription2 = debounced
 
 PlaygroundPage.current.liveView = UIHostingController(rootView: view.frame(width: 375, height: 600))
 
-subject.displayEvents(in: subjectTimeline)
-debounced.displayEvents(in: debouncedTimeline)
-subject.feed(with: typingHelloWorld)
+//subject.displayEvents(in: subjectTimeline)
+//debounced.displayEvents(in: debouncedTimeline)
+//subject.feed(with: typingHelloWorld)

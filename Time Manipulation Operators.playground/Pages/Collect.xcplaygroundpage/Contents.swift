@@ -33,6 +33,6 @@ let view = VStack(spacing: 40) {
 
 PlaygroundPage.current.liveView = UIHostingController(rootView: view.frame(width: 375, height: 600))
 
-sourcePublisher.displayEvents(in: sourceTimeline)
-collectedPublisher.displayEvents(in: collectedTimeline)
-collectedPublisher2.displayEvents(in: collectedTimeline2)
+//sourcePublisher.displayEvents(in: sourceTimeline)
+//collectedPublisher.displayEvents(in: collectedTimeline)
+//collectedPublisher2.displayEvents(in: collectedTimeline2)

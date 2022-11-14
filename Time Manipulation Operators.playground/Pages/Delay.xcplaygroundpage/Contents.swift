@@ -25,5 +25,5 @@ let view = VStack(spacing: 50) {
 
 PlaygroundPage.current.liveView = UIHostingController(rootView: view.frame(width: 375, height: 600))
 
-sourcePublisher.displayEvents(in: sourceTimeline)
-delayePublisher.displayEvents(in: delayedTimeline)
+//sourcePublisher.displayEvents(in: sourceTimeline)
+//delayePublisher.displayEvents(in: delayedTimeline)
