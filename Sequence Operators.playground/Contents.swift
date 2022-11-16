@@ -39,3 +39,15 @@ example(of: "max") {
         .sink(receiveValue: { print("Highest value is \($0)") })
         .store(in: &subscriptions)
 }
+
+
+example(of: "first") {
+    let publisher  = ["A", "B", "C"].publisher
+    
+    publisher
+        .print("publisher")
+        .first()
+        .sink(receiveValue: { print("First value is \($0)") })
+        .store(in: &subscriptions)
+}
+
