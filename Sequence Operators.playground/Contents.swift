@@ -29,3 +29,13 @@ example(of: "min non-Comparable") {
         .store(in: &subscriptions)
 }
 
+
+example(of: "max") {
+    let publisher = ["A", "F", "Z", "E"].publisher
+    
+    publisher
+        .print("publisher")
+        .max()
+        .sink(receiveValue: { print("Highest value is \($0)") })
+        .store(in: &subscriptions)
+}
