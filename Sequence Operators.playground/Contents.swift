@@ -13,3 +13,19 @@ example(of: "min") {
         .store(in: &subscriptions)
 }
 
+example(of: "min non-Comparable") {
+    let publisher = ["12345", "ab", "hello world"]
+    
+        .map { Data($0.utf8) }
+        .publisher
+    
+    publisher
+        .print("publisher")
+        .min(by: { $0.count < $1.count})
+        .sink { data in
+            let string = String(data: data, encoding: .utf8)!
+            print("Smallets data is: \(string), \(data.count) bytes")
+        }
+        .store(in: &subscriptions)
+}
+
