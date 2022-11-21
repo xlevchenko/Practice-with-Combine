@@ -51,3 +51,42 @@ example(of: "first") {
         .store(in: &subscriptions)
 }
 
+
+example(of: "first(wher:)") {
+    let publisher = ["J", "O", "H", "N"].publisher
+    
+    publisher
+        .print("publisher")
+        .first(where: { "Hello World" .contains($0) })
+        .sink(receiveValue: { print("First match is \($0)") })
+        .store(in: &subscriptions)
+}
+
+example(of: "last") {
+    let publisher = ["A", "B", "C"].publisher
+    
+    publisher
+        .print("publisher")
+        .last()
+        .sink(receiveValue: { print("Last value is \($0)") })
+        .store(in: &subscriptions)
+}
+
+example(of: "output(at:)") {
+    let publisher = ["A", "B", "C", "D"].publisher
+    
+    publisher
+        .print("publisher")
+        .output(at: 1)
+        .sink(receiveValue: { print("Value at index 1 is \($0)") })
+        .store(in: &subscriptions)
+}
+
+example(of: "output(in:)") {
+    let publisher = ["A", "B", "C", "D", "E"].publisher
+    
+    publisher
+        .output(in: 1...3)
+        .sink(receiveValue: { print("Value at index 1 is \($0)") })
+        .store(in: &subscriptions)
+}
