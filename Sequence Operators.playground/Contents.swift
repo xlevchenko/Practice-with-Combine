@@ -115,3 +115,22 @@ example(of: "contains") {
         }
         .store(in: &subscriptions)
 }
+
+
+example(of: "contains(where:)") {
+    struct Person {
+        let id: Int
+        let name: String
+    }
+    
+    let people = [(123, "Shai Mishali"), (777, "Marin Todorov"), (214, "Florent Pillet")]
+        .map(Person.init)
+        .publisher
+    
+    people
+        .contains(where: { $0.id == 800 || $0.name == "Marin Todorov"})
+        .sink { contains in
+            print(contains ? "Criteria matches!" : "Coundn't find a match for the criteria")
+        }
+        .store(in: &subscriptions)
+}
