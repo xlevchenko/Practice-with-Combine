@@ -90,3 +90,14 @@ example(of: "output(in:)") {
         .sink(receiveValue: { print("Value at index 1 is \($0)") })
         .store(in: &subscriptions)
 }
+
+
+example(of: "count") {
+    let publisher = ["A", "B", "C"].publisher
+    
+    publisher
+        .print("publisher")
+        .count()
+        .sink(receiveValue: { print("I have \($0) items") })
+        .store(in: &subscriptions)
+}
