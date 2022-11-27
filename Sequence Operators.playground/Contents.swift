@@ -134,3 +134,16 @@ example(of: "contains(where:)") {
         }
         .store(in: &subscriptions)
 }
+
+
+example(of: "allSatisfy") {
+    let publisher = stride(from: 0, through: 5, by: 2).publisher
+    
+    publisher
+        .print("publisher")
+        .allSatisfy { $0 % 2 == 0 }
+        .sink { allEvent in
+            print(allEvent ? "All numbers are even" : "Something is odd...")
+        }
+        .store(in: &subscriptions)
+}
