@@ -101,3 +101,17 @@ example(of: "count") {
         .sink(receiveValue: { print("I have \($0) items") })
         .store(in: &subscriptions)
 }
+
+
+example(of: "contains") {
+    let publisher = ["A", "B", "C", "D", "E"].publisher
+    let letter = "C"
+    
+    publisher
+        .print("publisher")
+        .contains(letter)
+        .sink { contains in
+            print(contains ? "Publisher emitted \(letter)!" : "Publisher never emitted \(letter)!")
+        }
+        .store(in: &subscriptions)
+}
