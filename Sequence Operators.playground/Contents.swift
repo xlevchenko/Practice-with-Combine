@@ -147,3 +147,16 @@ example(of: "allSatisfy") {
         }
         .store(in: &subscriptions)
 }
+
+
+example(of: "reduce") {
+    let publisher = ["Hel", "lo", " ", "Wor", "ld", "!"].publisher
+    
+    publisher
+        .print("publisher")
+        .reduce("") { accumulator, value in
+            accumulator + value
+        }
+        .sink(receiveValue: { print("Reduced into: \($0)") })
+        .store(in: &subscriptions)
+}
