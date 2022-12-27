@@ -35,6 +35,9 @@ class CollageNeueModel: ObservableObject {
   
   private var subscriptions = Set<AnyCancellable>()
   private let images = CurrentValueSubject<[UIImage], Never>([])
+  let updateUISubject = PassthroughSubject<Int, Never>()
+  
+  @Published var imagePreview: UIImage?
   
   // MARK: - Collage
   
@@ -42,15 +45,23 @@ class CollageNeueModel: ObservableObject {
   private(set) var lastErrorMessage = ""
 
   func bindMainView() {
-    
+    images
+      .handleEvents(receiveOutput: { [weak self] photos in
+        self?.updateUISubject.send(photos.count)
+      })
+                    
+      .map { photos in
+        UIImage.collage(images: photos, size: CollageNeueModel.collageSize)
+      }
+      .assign(to: &$imagePreview)
   }
 
   func add() {
-    
+    images.value.append(UIImage(named: "IMG_1907")!)
   }
 
   func clear() {
-    
+    images.send([])
   }
 
   func save() {
