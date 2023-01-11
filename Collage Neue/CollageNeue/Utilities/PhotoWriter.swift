@@ -38,5 +38,20 @@ class PhotoWriter {
     case generic(Swift.Error)
   }
 
-  
+  static func save(_ image: UIImage) -> Future<String, PhotoWriter.Error> {
+    Future { resolve in
+      do {
+        try PHPhotoLibrary.shared().performChangesAndWait {
+          let request = PHAssetChangeRequest.creationRequestForAsset(from: image)
+          
+          guard let saveAssetID = request.placeholderForCreatedAsset?.localIdentifier else {
+            return resolve(.failure(.couldNotSavePhoto))
+          }
+          resolve(.success(saveAssetID))
+        }
+      } catch {
+        resolve(.failure(.generic(error)))
+      }
+    }
+  }
 }
