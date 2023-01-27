@@ -33,18 +33,52 @@ import Combine
 //}
 
 
-let subject = PassthroughSubject<Data, URLError>()
+//let subject = PassthroughSubject<Data, URLError>()
+//
+//let multicasted = URLSession.shared
+//    .dataTaskPublisher(for: URL(string: "https://www.raywenderlich.com")!)
+//    .map(\.data)
+//    .print("multicast")
+//    .multicast(subject: subject)
+//
+//let subscription3 = multicasted
+//    .sink { _ in }
+//receiveValue: {
+//        print("subscription3 received: '\($0)'")
+//    }
+//
+//let cancellable = multicasted.connect()
 
-let multicasted = URLSession.shared
-    .dataTaskPublisher(for: URL(string: "https://www.raywenderlich.com")!)
-    .map(\.data)
-    .print("multicast")
-    .multicast(subject: subject)
+//Future
 
-let subscription3 = multicasted
-    .sink { _ in }
-receiveValue: {
-        print("subscription3 received: '\($0)'")
+func performeSomeWork() throws -> Int {
+    print("Preforming some work and returning a result")
+    return 5
+}
+
+let future = Future <Int, Error> { fulfill in
+    do {
+        let result = try performeSomeWork()
+        fulfill(.success(result))
+    } catch {
+        fulfill(.failure(error))
+    }
+}
+
+print("Subscribing to future...")
+
+
+let subcription1 = future
+    .sink { _ in
+        print("subcription 1 completed")
+    } receiveValue: {
+        print("subcription1 recived: '\($0)'")
     }
 
-let cancellable = multicasted.connect()
+let subscription2 = future
+    .sink { _ in
+        print("subcription2 completed")
+    } receiveValue: {
+        print("subcription2 recived: \($0)")
+    }
+
