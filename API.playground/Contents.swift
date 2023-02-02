@@ -69,8 +69,23 @@ struct API {
             .dataTaskPublisher(for: EndPoint.stories.url)
             .map(\.data)
             .decode(type: [Int].self, decoder: decoder)
-        
-        return Empty().eraseToAnyPublisher()
+            .mapError { error -> API.Error in
+                switch error {
+                case is URLError:
+                    return Error.addressUnreachable(EndPoint.stories.url)
+                default:
+                    return Error.invalidResponse
+                }
+            }
+            .filter { !$0.isEmpty }
+            .flatMap { storyIDs in
+                return self.mergedStories(ids: storyIDs)
+            }
+            .scan([]) { stories, story -> [Story] in
+                return stories + [story]
+            }
+            .map { $0.sorted() }
+            .eraseToAnyPublisher()
     }
 }
 
@@ -81,10 +96,13 @@ var subcriptions = [AnyCancellable]()
 //    .sink(receiveCompletion: { print($0)}, receiveValue: { print($0) })
 //    .store(in: &subcriptions)
 
-api.mergedStories(ids: [1000, 1001, 1002])
-    .sink(receiveCompletion: { print($0)}, receiveValue: { print($0) })
-    .store(in: &subcriptions)
+//api.mergedStories(ids: [1000, 1001, 1002])
+//    .sink(receiveCompletion: { print($0)}, receiveValue: { print($0) })
+//    .store(in: &subcriptions)
 
+api.stories()
+    .sink { print($0) } receiveValue: { print($0) }
+    .store(in: &subcriptions)
 
 
 PlaygroundPage.current.needsIndefiniteExecution = true
