@@ -1,3 +1,11 @@
+//: [Previous](@previous)
+import UIKit
+import Combine
+
+var subscriptions = Set<AnyCancellable>()
+//: ## Catching and retrying
+<#Add your code here#>
+
 /// Copyright (c) 2021 Razeware LLC
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,30 +33,3 @@
 /// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
-
-import SwiftUI
-import Combine
-
-@main
-struct HNReader: App {
-    let viewModel = ReaderViewModel()
-    let userSettings = Settings()
-    private var subscriptions = Set<AnyCancellable>()
-    
-    init() {
-        userSettings.$keywords
-            .map { $0.map { $0.value } }
-            .assign(to: \.filter, on: viewModel)
-            .store(in: &subscriptions)
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            ReaderView(model: viewModel)
-                .onAppear {
-                    viewModel.fetchStories()
-                }
-                .environmentObject(userSettings)
-        }
-    }
-}

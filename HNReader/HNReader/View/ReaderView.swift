@@ -41,7 +41,9 @@ struct ReaderView: View {
         .eraseToAnyPublisher()
     
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-
+    
+    @EnvironmentObject var settings: Settings
+        
     init(model: ReaderViewModel) {
         self.model = model
     }
@@ -80,6 +82,7 @@ struct ReaderView: View {
             // Present the Settings sheet here
             .sheet(isPresented: self.$presentingSettingsSheet, content: {
                 SettingsView()
+                    .environmentObject(self.settings)
             })
             .alert(item: self.$model.error) { error in
                 Alert(title: Text("Network error"), message: Text(error.localizedDescription), dismissButton: .cancel())

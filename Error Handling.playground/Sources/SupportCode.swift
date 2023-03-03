@@ -26,29 +26,10 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import SwiftUI
-import Combine
+import Foundation
 
-@main
-struct HNReader: App {
-    let viewModel = ReaderViewModel()
-    let userSettings = Settings()
-    private var subscriptions = Set<AnyCancellable>()
-    
-    init() {
-        userSettings.$keywords
-            .map { $0.map { $0.value } }
-            .assign(to: \.filter, on: viewModel)
-            .store(in: &subscriptions)
-    }
-    
-    var body: some Scene {
-        WindowGroup {
-            ReaderView(model: viewModel)
-                .onAppear {
-                    viewModel.fetchStories()
-                }
-                .environmentObject(userSettings)
-        }
-    }
+public func example(of description: String,
+                    action: () -> Void) {
+  print("\n——— Example of:", description, "———")
+  action()
 }
