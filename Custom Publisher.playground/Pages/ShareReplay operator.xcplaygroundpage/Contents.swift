@@ -80,3 +80,87 @@ private final class ShareReplaySubscription<Output, Failure: Error>: Subscriptio
         subscriber.receive(completion: completion)
     }
 }
+
+
+extension Publishers {
+    final class ShareReplay<Upstream: Publisher>: Publisher {
+        
+        typealias Output = Upstream.Output
+        typealias Failure = Upstream.Failure
+        
+        private let lock = NSRecursiveLock()
+        private let upstream: Upstream
+        private let capacity: Int
+        private var replay = [Output]()
+        private var subscriptions = [ShareReplaySubscription<Output, Failure>]()
+        private var completion: Subscribers.Completion<Failure>? = nil
+        
+        func receive<S>(subscriber: S) where S : Subscriber, Upstream.Failure == S.Failure, Upstream.Output == S.Input {
+            
+        }
+        
+        init(upstream: Upstream, capacity: Int) {
+            self.upstream = upstream
+            self.capacity  = capacity
+        }
+        
+        private func relay(_ value: Output) {
+            lock.lock()
+            
+            defer { lock.unlock() }
+            
+            guard completion == nil else { return }
+            
+            replay.append(value)
+            if replay.count > capacity {
+                replay.removeFirst()
+            }
+            
+            subscriptions.forEach { subscription in
+                subscription.receive(value)
+            }
+        }
+        
+        private func complete(_ completion: Subscribers.Completion<Failure>) {
+            lock.lock()
+            
+            defer { lock.unlock() }
+            self.completion = completion
+            
+            subscriptions.forEach { value in
+                value.receive(completion: completion)
+            }
+        }
+        
+        func receive<S: Subscriber>(subscriber: S)
+        where Failure == S.Failure,
+              Output == S.Input {
+                  lock.lock()
+                  defer { lock.unlock() }
+                  
+                  let subscription = ShareReplaySubscription(
+                    subscriber: subscriber,
+                    replay: replay,
+                    capacity: capacity,
+                    completion: completion)
+                  
+                  subscriptions.append(subscription)
+                  subscriber.receive(subscription: subscription)
+                  
+                  guard subscriptions.count == 1 else { return }
+                  
+                  let sink = AnySubscriber { subscription in
+                      subscription.request(.unlimited)
+                  } receiveValue: { [weak self] (value: Output) -> Subscribers.Demand in
+                      self?.relay(value)
+                      return .none
+                  } receiveCompletion: { [weak self] in
+                      self?.complete($0)
+                  }
+                  
+                  upstream.subscribe(sink)
+              }
+    }
+}
+
+
