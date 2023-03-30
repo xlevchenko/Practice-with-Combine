@@ -95,9 +95,6 @@ extension Publishers {
         private var subscriptions = [ShareReplaySubscription<Output, Failure>]()
         private var completion: Subscribers.Completion<Failure>? = nil
         
-        func receive<S>(subscriber: S) where S : Subscriber, Upstream.Failure == S.Failure, Upstream.Output == S.Input {
-            
-        }
         
         init(upstream: Upstream, capacity: Int) {
             self.upstream = upstream
@@ -164,3 +161,45 @@ extension Publishers {
 }
 
 
+extension Publisher {
+    func shareReplay(capacity: Int = .max) -> Publishers.ShareReplay<Self> {
+        return Publishers.ShareReplay(upstream: self, capacity: capacity)
+    }
+}
+
+var logger = TimeLogger(sinceOrigin: true)
+
+let subject = PassthroughSubject<Int, Never>()
+
+let publisher = subject.shareReplay(capacity: 2)
+subject.send(0)
+
+
+let subscription1 = publisher.sink { value in
+    print("subscribtion1 completed: \(value)", to: &logger)
+} receiveValue: { value in
+    print("subscription1 received \(value)", to: &logger)
+}
+
+subject.send(1)
+subject.send(2)
+subject.send(3)
+
+let subscription2 = publisher.sink { value in
+    print("subscribtion2 completed: \(value)", to: &logger)
+} receiveValue: { value in
+    print("subscription2 received \(value)", to: &logger)
+}
+
+subject.send(4)
+subject.send(5)
+subject.send(completion: .finished)
+
+var subscription3: Cancellable? = nil
+
+DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+    print("Subscribing to shareReplay after upstream completed")
+    subscription3 = publisher.sink(receiveCompletion: { <#Subscribers.Completion<Never>#> in
+        <#code#>
+    }, receiveValue: <#T##((Int) -> Void)##((Int) -> Void)##(Int) -> Void#>)
+}
