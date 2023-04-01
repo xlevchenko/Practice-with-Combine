@@ -171,7 +171,9 @@ var logger = TimeLogger(sinceOrigin: true)
 
 let subject = PassthroughSubject<Int, Never>()
 
-let publisher = subject.shareReplay(capacity: 2)
+let publisher = subject
+    .print("shareReplay")
+    .shareReplay(capacity: 2)
 subject.send(0)
 
 
@@ -199,7 +201,10 @@ var subscription3: Cancellable? = nil
 
 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
     print("Subscribing to shareReplay after upstream completed")
-    subscription3 = publisher.sink(receiveCompletion: { <#Subscribers.Completion<Never>#> in
-        <#code#>
-    }, receiveValue: <#T##((Int) -> Void)##((Int) -> Void)##(Int) -> Void#>)
+    subscription3 = publisher.sink(
+        receiveCompletion: {
+        print("subscription3 completed: \($0)", to: &logger)
+    }, receiveValue: {
+        print("subscription3 received \($0)", to: &logger)
+    })
 }
