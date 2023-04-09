@@ -44,5 +44,46 @@ class CombineOperatorsTests: XCTestCase {
     func test_collect() {
         let values = [0, 1, 2]
         let publisher = values.publisher
+        
+        publisher
+            .collect()
+            .sink { value in
+                XCTAssert(value == values, "Result was expected to be \(values) but was \(value)")
+            }
+            .store(in: &subscriptions)
+    }
+    
+    func test_flatMapWithMax2Publisher() {
+        let intSubject1 = PassthroughSubject<Int, Never>()
+        let intSubject2 = PassthroughSubject<Int, Never>()
+        let intSubject3 = PassthroughSubject<Int, Never>()
+        
+        let publisher = CurrentValueSubject<PassthroughSubject<Int, Never>, Never>(intSubject1)
+        
+        let expected = [1, 2, 4]
+        
+        var results = [Int]()
+        
+        publisher
+            .flatMap(maxPublishers: .max(2)) { subject in
+                subject
+            }
+            .sink { value in
+                results.append(value)
+            }
+            .store(in: &subscriptions)
+        
+        intSubject1.send(1)
+        
+        publisher.send(intSubject2)
+        intSubject2.send(2)
+        
+        publisher.send(intSubject3)
+        intSubject3.send(3)
+        intSubject2.send(4)
+        
+        publisher.send(completion: .finished)
+        
+        XCTAssert(results == expected, "Results exepted to be  \(expected) but were \(results)")
     }
 }
