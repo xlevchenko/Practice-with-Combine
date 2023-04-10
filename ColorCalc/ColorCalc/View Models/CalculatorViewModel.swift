@@ -90,11 +90,9 @@ final class CalculatorViewModel: ObservableObject {
     
     hexTextShared
       .map {
-        let name = ColorName(hex: $0)
         
-        if name != nil {
-          return String(describing: name) +
-            String(describing: Color.opacityString(forHex: $0))
+        if let name = ColorName(hex: $0) {
+            return "\(name) \(Color.opacityString(forHex: $0))"
         } else {
           return "------------"
         }
