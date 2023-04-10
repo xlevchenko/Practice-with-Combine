@@ -86,4 +86,65 @@ class CombineOperatorsTests: XCTestCase {
         
         XCTAssert(results == expected, "Results exepted to be  \(expected) but were \(results)")
     }
+    
+    
+    func test_timerPublish() {
+        func normalized(_ ti: TimeInterval) -> TimeInterval {
+            return Double(round(ti * 10) / 10)
+        }
+        
+        let now = Date().timeIntervalSinceReferenceDate
+        
+        let expectation = self.expectation(description: #function)
+        
+        let expected = [0.5, 1, 1.5]
+        
+        var result = [TimeInterval]()
+        
+        let publisher = Timer
+            .publish(every: 0.5, on: .main, in: .common)
+            .autoconnect()
+            .prefix(3)
+        
+        publisher
+            .sink { _ in
+                expectation.fulfill()
+            } receiveValue: {
+                result.append(normalized($0.timeIntervalSinceReferenceDate - now))
+            }
+            .store(in: &subscriptions)
+        
+        waitForExpectations(timeout: 2, handler: nil)
+        
+        XCTAssert(result == expected, "Result expected to be \(expected) but were \(result)")
+    }
+    
+    func test_shareReplay() {
+        let subject = PassthroughSubject<Int, Never>()
+        
+        let publisher = subject.shareReplay(capacity: 2)
+        
+        let expected = [0, 2, 2, 3, 3, 5]
+        var results = [Int]()
+        
+        publisher
+            .sink { value in
+                results.append(value)
+            }
+            .store(in: &subscriptions)
+        
+        subject.send(0)
+        subject.send(1)
+        subject.send(2)
+        
+        publisher
+            .sink { value in
+                results.append(value)
+            }
+            .store(in: &subscriptions)
+        
+        subject.send(3)
+        
+        XCTAssert(results = expected, "Result expected to be \(expected) but were \(results)")
+    }
 }
