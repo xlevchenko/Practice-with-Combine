@@ -124,7 +124,7 @@ class CombineOperatorsTests: XCTestCase {
         
         let publisher = subject.shareReplay(capacity: 2)
         
-        let expected = [0, 2, 2, 3, 3, 5]
+        let expected = [0, 1, 2, 1, 2, 3, 3]
         var results = [Int]()
         
         publisher
@@ -145,6 +145,6 @@ class CombineOperatorsTests: XCTestCase {
         
         subject.send(3)
         
-        XCTAssert(results = expected, "Result expected to be \(expected) but were \(results)")
+        XCTAssert(results == expected, "Result expected to be \(expected) but were \(results)")
     }
 }

@@ -61,7 +61,47 @@ class ColorCalcTests: XCTestCase {
         viewModel.hexText = "006636AA"
         
         XCTAssert(result == expected, "Name expected to be \(expected) but was \(result)")
+
+    }
+    
+    func test_processBackspaseDeletesLastCharapter() {
+        let expected = "#0080F"
+        var result = ""
+        
+        viewModel.$hexText
+            .dropFirst()
+            .sink(receiveValue: { result = $0 })
+            .store(in: &subsriptions)
         
         
+        viewModel.process(CalculatorViewModel.Constant.backspace)
+        
+        XCTAssert(result == expected, "He was expected to be \(expected) but was \(result)")
+    }
+    
+    func test_processBackspaceReceivesColor() {
+        let expexted = Color.white
+        var result = Color.clear
+        
+        viewModel.$color
+            .sink(receiveValue: { result = $0 })
+            .store(in: &subsriptions)
+        
+        viewModel.process(CalculatorViewModel.Constant.backspace)
+        
+        XCTAssert(result == expexted, "Hes was expected to be \(expexted) but was \(result)")
+    }
+    
+    func test_whiteColorReceivedForBadData() {
+        let expected = Color.white
+        var result = Color.clear
+        
+        viewModel.$color
+            .sink(receiveValue: { result = $0 })
+            .store(in: &subsriptions)
+        
+        viewModel.hexText = "abc"
+        
+        XCTAssert(result == expected, "Color expected to be \(expected) but was \(result)")
     }
 }
