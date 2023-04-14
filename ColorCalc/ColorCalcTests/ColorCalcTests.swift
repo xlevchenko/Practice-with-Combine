@@ -65,7 +65,7 @@ class ColorCalcTests: XCTestCase {
     }
     
     func test_processBackspaseDeletesLastCharapter() {
-        let expected = "#0080F"
+        let expected = "#080"
         var result = ""
         
         viewModel.$hexText
@@ -103,5 +103,32 @@ class ColorCalcTests: XCTestCase {
         viewModel.hexText = "abc"
         
         XCTAssert(result == expected, "Color expected to be \(expected) but was \(result)")
+    }
+    
+    func test_processClearSetsHexToHashtag() {
+        let expected = "#"
+        var result = ""
+        
+        viewModel.$hexText
+            .dropFirst()
+            .sink(receiveValue: { result = $0 })
+            .store(in: &subsriptions)
+        
+        viewModel.process(CalculatorViewModel.Constant.clear)
+        
+        XCTAssert(result == expected, "Color expected to be \(expected) but was \(result)")
+    }
+    
+    func test_correctRGBOTextReceived() {
+        let expected = "0, 102, 54, 170"
+        var result = ""
+        
+        viewModel.$rgboText
+            .sink(receiveValue: { result = $0 })
+            .store(in: &subsriptions)
+        
+        viewModel.hexText = "#006636AA"
+        
+        XCTAssert(result == expected, "RGBO text expected to be \(expected) but was \(result)")
     }
 }

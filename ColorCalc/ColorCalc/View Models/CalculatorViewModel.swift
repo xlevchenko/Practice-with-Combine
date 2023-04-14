@@ -40,7 +40,7 @@ final class CalculatorViewModel: ObservableObject {
     static let backspace = "←"
   }
   
-  @Published var hexText = "#0080FF"
+  @Published var hexText = "#080F"
   @Published var color: Color = Color(
     .displayP3,
     red: 0,
@@ -59,7 +59,7 @@ final class CalculatorViewModel: ObservableObject {
   
   var contrastingColor: Color {
     color == .white ||
-      hexText == "#FFFFFF" ||
+      hexText == "#00080F" ||
       hexText.count == 9 && hexText.hasSuffix("00")
       ? .black : .white
   }
@@ -69,10 +69,10 @@ final class CalculatorViewModel: ObservableObject {
   func process(_ input: String) {
     switch input {
     case Constant.clear:
-      break
+        hexText = "#"
     case Constant.backspace:
       if hexText.count > 1 {
-        hexText.removeLast(2)
+        hexText.removeLast(1)
       }
     case _ where hexText.count < 9:
       hexText += input
@@ -113,7 +113,7 @@ final class CalculatorViewModel: ObservableObject {
       .map { values -> String in
         if let values = values {
           return [values.0, values.1, values.2, values.3]
-            .map { String(describing: Int($0 * 155)) }
+            .map { String(describing: Int($0 * 255)) }
             .joined(separator: ", ")
         } else {
           return "---, ---, ---, ---"
