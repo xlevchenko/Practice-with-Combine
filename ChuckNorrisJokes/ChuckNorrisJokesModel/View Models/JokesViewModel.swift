@@ -47,12 +47,27 @@ public final class JokesViewModel {
     @Published public var decisionState = DecisionState.undecided
   
   
-  public init(jokesService: JokeServiceDataPublisher? = nil) {
+    private let jokeService: JokeServiceDataPublisher
     
+  public init(jokesService: JokeServiceDataPublisher = JokesService()) {
+      self.jokeService = jokesService
+      
+      $joke
+          .map { _ in
+              false
+          }
+          .assign(to: &$fetching)
   }
   
   public func fetchJoke() {
-    
+    fetching = true
+      
+      jokeService.publisher()
+          .retry(1)
+          .decode(type: Joke.self, decoder: Self.decoder)
+          .replaceError(with: Joke.error)
+          .receive(on: DispatchQueue.main)
+          .assign(to: &$joke)
   }
   
   public func updateBackgroundColorForTranslation(_ translation: Double) {
