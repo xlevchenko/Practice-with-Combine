@@ -91,7 +91,7 @@ struct JokeView: View {
     
     private var jokeCardView: some View {
         JokeCardView(viewModel: viewModel)
-            .background(Color.white)
+            .background(viewModel.backgroundColor)
             .cornerRadius(20)
             .shadow(radius: 10)
             .rotationEffect(rotationAngle)
