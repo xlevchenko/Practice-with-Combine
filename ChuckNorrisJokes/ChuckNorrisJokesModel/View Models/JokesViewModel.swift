@@ -34,7 +34,7 @@ import UIKit
 import Combine
 import SwiftUI
 
-public final class JokesViewModel {
+public final class JokesViewModel: ObservableObject {
   public enum DecisionState {
     case disliked, undecided, liked
   }
@@ -97,6 +97,6 @@ public final class JokesViewModel {
   }
   
   public func reset() {
-    
+    backgroundColor = Color("Gray")
   }
 }
