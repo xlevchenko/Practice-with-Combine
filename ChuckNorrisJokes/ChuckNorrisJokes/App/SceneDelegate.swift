@@ -32,13 +32,16 @@
 
 import UIKit
 import SwiftUI
+import Combine
+import CoreData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
   
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     let contentView = JokeView()
-    
+          .environment(\.managedObjectContext, CoreDataStack.viewContext)
+      
     if let windowScene = scene as? UIWindowScene {
       let window = UIWindow(windowScene: windowScene)
       window.rootViewController = UIHostingController(rootView: contentView)
@@ -48,10 +51,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidEnterBackground(_ scene: UIScene) {
-    // Called as the scene transitions from the foreground to the background.
-    // Use this method to save data, release shared resources, and store enough scene-specific state information
-    // to restore the scene back to its current state.
     
-    // Save changes in the application's managed object context when the application transitions to the background.
+      CoreDataStack.save()
   }
+    
+    private enum CoreDataStack {
+        
+        static var viewContext: NSManagedObjectContext = {
+            let container = NSPersistentContainer(name: "ChuckNorrisJokes")
+            container.loadPersistentStores { _, error in
+                guard error == nil else {
+                    fatalError("\(#file), \(#function), \(error!.localizedDescription)")
+                }
+            }
+            return container.viewContext
+        }()
+        
+        static func save() {
+            guard viewContext.hasChanges else  { return }
+            
+            do {
+                try viewContext.save()
+            } catch {
+                fatalError("\(#file), \(#function), \(error.localizedDescription)")
+            }
+        }
+    }
 }
