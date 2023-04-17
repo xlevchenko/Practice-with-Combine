@@ -66,11 +66,11 @@ struct JokeView: View {
                 .offset(y: showJokeView ? 0.0 : -bounds.height)
             
             HUDView(imageType: .thumbDown)
-                .opacity(0)
+                .opacity(viewModel.decisionState == .disliked ? hudOpacity : 0)
                 .animation(.easeInOut)
             
             HUDView(imageType: .rofl)
-                .opacity(0)
+                .opacity(viewModel.decisionState == .liked ? hudOpacity : 0)
                 .animation(.easeInOut)
         }
         .onAppear(perform: {
@@ -115,11 +115,14 @@ struct JokeView: View {
     }
     
     private func updateDecisionStateForChange(_ change: DragGesture.Value) {
-        
+        viewModel.updateDecisionStateForTranslation(
+            translation,
+            andPredictedEndLocationX: change.predictedEndLocation.x,
+            inBounds: bounds)
     }
     
     private func updateBackgroundColor() {
-        
+        viewModel.updateBackgroundColorForTranslation(translation)
     }
     
     private func handle(_ change: DragGesture.Value) {
